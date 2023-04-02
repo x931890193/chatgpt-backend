@@ -28,7 +28,7 @@ func (r ReqContentType) String() string {
 }
 
 const (
-	RequestTimeOut  = 10 * time.Second
+	RequestTimeOut  = 20 * time.Second
 	UserAgent       = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
 	ContentTypeJson = iota + 1
 	ContentTypeProto
@@ -57,10 +57,10 @@ func Post(url string, data interface{}, contentType ReqContentType, extraHeaders
 			logger.Error.Println(err.Error())
 		}
 	}(resp.Body)
-	if resp.StatusCode != 200 {
-		return nil, errors.New(strconv.Itoa(resp.StatusCode))
-	}
 	body, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != 200 {
+		return nil, errors.New(fmt.Sprintf("status code: %s, message: %s", strconv.Itoa(resp.StatusCode), body))
+	}
 	return body, nil
 }
 
@@ -89,9 +89,9 @@ func Get(url string, params map[string]string, contentType ReqContentType, extra
 			logger.Error.Println(err.Error())
 		}
 	}(resp.Body)
-	if resp.StatusCode != 200 {
-		return nil, errors.New(strconv.Itoa(resp.StatusCode))
-	}
 	body, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != 200 {
+		return nil, errors.New(fmt.Sprintf("status code: %s, message: %s", strconv.Itoa(resp.StatusCode), body))
+	}
 	return body, nil
 }

@@ -1,8 +1,8 @@
 package service
 
 import (
-	"chatgpt-backend/handler"
 	"chatgpt-backend/logger"
+	"chatgpt-backend/types"
 	"chatgpt-backend/utils"
 	"encoding/json"
 	"fmt"
@@ -33,7 +33,7 @@ type OpenAi struct {
 	ApiBaseUrl string `json:"api_base_url"`
 }
 
-func New(apiKey, ApiBaseUrl string) *OpenAi {
+func NewAI(apiKey, ApiBaseUrl string) *OpenAi {
 	return &OpenAi{
 		ApiKey:     apiKey,
 		ApiBaseUrl: ApiBaseUrl,
@@ -85,7 +85,7 @@ func (openAi *OpenAi) GetBalance() (float64, error) {
 	return balance.Data.TotalAvailable, nil
 }
 
-func (openAi *OpenAi) SendMessage(text string, options *handler.SendMessageBrowserOptions) (*handler.ChatMessage, error) {
+func (openAi *OpenAi) SendMessage(text string, options *types.SendMessageBrowserOptions) (*types.BaseChatMessage, error) {
 	balanceUrl := fmt.Sprintf("%s/v1/chat/completions", openAi.ApiBaseUrl)
 	//HTTP代理
 	proxy := "http://127.0.0.1:7890/"
@@ -102,7 +102,12 @@ func (openAi *OpenAi) SendMessage(text string, options *handler.SendMessageBrows
 	}, &http.Transport{Proxy: http.ProxyURL(proxyAddress)})
 	if err != nil {
 		logger.Error.Println(err.Error())
+		return nil, err
 	}
-	logger.Info.Println(string(res))
-	return nil, nil
+	resp := types.BaseChatMessage{}
+	err = json.Unmarshal(res, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }

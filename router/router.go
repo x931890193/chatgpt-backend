@@ -2,6 +2,7 @@ package router
 
 import (
 	"chatgpt-backend/handler"
+	"chatgpt-backend/middleware"
 	"github.com/gin-gonic/gin"
 	"os"
 )
@@ -26,10 +27,14 @@ func SetupServer() *gin.Engine {
 	//router.Use(middleware.BaseAuthMiddleware())
 	api := router.Group("/api")
 	{
+		api.POST("/verify", handler.Verify)
+		api.Use(middleware.AuthMiddleware())
 		api.POST("/session", handler.Session)
 		api.POST("/chat-process", handler.Chat)
 		api.POST("/config", handler.Config)
-		api.POST("/verify", handler.Verify)
+		api.POST("/chat", handler.Chat)
+		api.GET("/models", handler.ModelList)
+
 	}
 	return router
 }
