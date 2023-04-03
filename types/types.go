@@ -36,38 +36,56 @@ type BaseResp struct {
 	Status  RespCode    `json:"status"`
 }
 
-type ChatRequest struct {
-	Options       interface{} `json:"options"`
-	Prompt        string      `json:"prompt"`
-	SystemMessage string      `json:"systemMessage"`
+type ConversationRequest struct {
+	ConversationId  string `json:"conversationId"`
+	ParentMessageId string `json:"parentMessageId"`
 }
+
+type ChatRequest struct {
+	Options       ConversationRequest `json:"options"`
+	Prompt        string              `json:"prompt"`
+	SystemMessage string              `json:"systemMessage"`
+}
+
 type BaseChatMessage struct {
 	Id      string `json:"id"`
 	Object  string `json:"object"`
-	Created int    `json:"created"`
+	Created int64  `json:"created"`
 	Model   string `json:"model"`
-	Choices []struct {
-		Text         string      `json:"text"`
-		Index        int         `json:"index"`
-		Logprobs     interface{} `json:"logprobs"`
-		FinishReason string      `json:"finish_reason"`
-	} `json:"choices"`
-	Usage struct {
+	Usage   struct {
 		PromptTokens     int `json:"prompt_tokens"`
 		CompletionTokens int `json:"completion_tokens"`
 		TotalTokens      int `json:"total_tokens"`
 	} `json:"usage"`
+	Choices []struct {
+		Message struct {
+			Role    string `json:"role"`
+			Content string `json:"content"`
+		} `json:"message"`
+		FinishReason string `json:"finish_reason"`
+		Index        int    `json:"index"`
+	} `json:"choices"`
+	Detail *BaseChatMessage `json:"detail"`
 }
 
+// ChatMessage ConversationResponse
 type ChatMessage struct {
-	Id              string      `json:"id"`
-	Text            string      `json:"text"`
-	Role            Role        `json:"role"`
-	Name            string      `json:"name"`
-	Delta           string      `json:"delta"`
-	Detail          interface{} `json:"detail"`
-	ParentMessageId string      `json:"parentMessageId"`
-	ConversationId  string      `json:"conversationId"`
+	Id              string            `json:"id"`
+	Text            string            `json:"text"`
+	Role            Role              `json:"role"`
+	Name            string            `json:"name"`
+	Delta           string            `json:"delta"`
+	Detail          ChatMessageDetail `json:"detail"`
+	ParentMessageId string            `json:"parentMessageId"`
+	ConversationId  string            `json:"conversationId"`
+}
+type ChatMessageDetail struct {
+	Choices interface{} `json:"choices"`
+	Created int64       `json:"created"`
+	Id      string      `json:"id"`
+	Model   string      `json:"model"`
+	Object  string      `json:"object"`
+	UseAge  interface{} `json:"useage"`
 }
 
 type SendMessageOptions struct {
@@ -85,7 +103,6 @@ type SendMessageOptions struct {
 type SendMessageBrowserOptions struct {
 	ConversationId  string            `json:"conversationId"`
 	ParentMessageId string            `json:"parentMessageId"`
-	MessageId       string            `json:"messageId"`
 	Action          MessageActionType `json:"action"`
 	TimeoutMs       int64             `json:"timeoutMs"`
 	OnProgress      interface{}
@@ -117,9 +134,17 @@ type VerifyRequest struct {
 }
 
 type Choice struct {
-	Delta        Delta  `json:"delta"`
-	Index        int32  `json:"index"`
-	FinishReason string `json:"finish_reason"`
+	Delta        Delta       `json:"delta"`
+	Index        int32       `json:"index"`
+	FinishReason string      `json:"finish_reason"`
+	LogProb      interface{} `json:"logprobs"`
+	Text         string      `json:"text"`
+}
+
+type UseAge struct {
+	CompletionTokens int64 `json:"completion_tokens"`
+	PromptTokens     int64 `json:"prompt_tokens"`
+	TotalTokens      int64 `json:"total_tokens"`
 }
 
 type CreateChatCompletionDeltaResponse struct {
