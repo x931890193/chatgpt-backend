@@ -5,6 +5,7 @@ import (
 	"chatgpt-backend/service"
 	"chatgpt-backend/types"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/http"
 )
 
@@ -20,32 +21,20 @@ func Chat(c *gin.Context) {
 		c.JSON(http.StatusOK, types.BaseResp{Message: err.Error(), Status: types.Failed})
 		return
 	}
-	resp, err := ai.SendMessage(req.Prompt, nil)
+
+	resp, err := ai.SendMessage(req, &types.SendMessageBrowserOptions{
+		ConversationId:  req.Options.ConversationId,
+		ParentMessageId: req.Options.ParentMessageId,
+	})
 	if err != nil {
 		c.JSON(http.StatusOK, types.BaseResp{Message: err.Error(), Status: types.Failed})
 		return
 	}
-
-	c.JSON(http.StatusOK, types.BaseResp{Data: types.ChatMessage{
-		Id:    "1",
-		Text:  resp.Choices[0].Text,
-		Role:  "user",
-		Name:  "sssss",
-		Delta: "1111",
-		Detail: types.CreateChatCompletionDeltaResponse{
-			Id:      "",
-			Object:  "",
-			Created: 0,
-			Model:   "",
-			Choices: []types.Choice{{
-				Delta:        types.Delta{Role: types.RoleUser, Content: resp.Choices[0].Text + "111111"},
-				Index:        0,
-				FinishReason: "stop",
-			}},
-		},
-		ParentMessageId: "0",
-		ConversationId:  "111111",
-	}})
+	conversationId := req.Options.ConversationId
+	if conversationId == "" {
+		conversationId = uuid.New().String()
+	}
+	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
 }
 
 func Config(c *gin.Context) {
