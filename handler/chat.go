@@ -34,6 +34,7 @@ func Chat(c *gin.Context) {
 	if conversationId == "" {
 		conversationId = uuid.New().String()
 	}
+	resp.AudioUrl = "https://cdn.mongona.com/music/87d7ee2a2cdad1e5e8b0704823ee66a7.mp3"
 	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
 }
 
