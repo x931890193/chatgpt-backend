@@ -31,3 +31,9 @@ GitHub:
 OpenAI:
   ApiKey:
   ApiBaseUrl: https://api.openai.com
+
+XunFei：
+  AppID:
+  TTSAppKey:
+  ASRAppKey:
+  TTSAppSecret:

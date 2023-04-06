@@ -78,6 +78,7 @@ type ChatMessage struct {
 	Detail          ChatMessageDetail `json:"detail"`
 	ParentMessageId string            `json:"parentMessageId"`
 	ConversationId  string            `json:"conversationId"`
+	AudioUrl        string            `json:"audio_url"`
 }
 type ChatMessageDetail struct {
 	Choices interface{} `json:"choices"`
