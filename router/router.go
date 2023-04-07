@@ -34,6 +34,7 @@ func SetupServer() *gin.Engine {
 		api.POST("/config", handler.Config)
 		api.POST("/chat", handler.Chat)
 		api.GET("/models", handler.ModelList)
+		api.POST("/audio", handler.HandleAsr)
 
 	}
 	return router

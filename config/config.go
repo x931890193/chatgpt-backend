@@ -78,10 +78,12 @@ type config struct {
 		ApiBaseUrl string `yaml:"ApiBaseUrl"`
 	} `yaml:"OpenAI"`
 	XunFei struct {
-		AppID        string `yaml:"AppID"`
-		TTSAppKey    string `yaml:"TTSAppKey"`
-		TTSAppSecret string `yaml:"TTSAppSecret"`
-		ASRAppKey    string `yaml:"ASRAppKey"`
+		AppID              string `yaml:"AppID"`
+		TTSAppKey          string `yaml:"TTSAppKey"`
+		TTSAppSecret       string `yaml:"TTSAppSecret"`
+		ASRAppKey          string `yaml:"ASRAppKey"`
+		ASRStreamAPISecret string `yaml:"ASRStreamAPISecret"`
+		ASRStreamAPIKey    string `yaml:"ASRStreamAPIKey"`
 	} `yaml:"XunFei"`
 }
 

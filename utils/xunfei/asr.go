@@ -25,7 +25,7 @@ var END_TAG = "{\"end\": true}"
 // SLICE_SIZE 每次发送的数据大小
 var SLICE_SIZE = 1280
 
-func Asr(audioContent []byte) string {
+func AsrRealtime(audioContent []byte) string {
 	retString := ""
 	ts := strconv.FormatInt(time.Now().Unix(), 10)
 	mac := hmac.New(sha1.New, []byte(config.Cfg.XunFei.ASRAppKey))
@@ -65,7 +65,7 @@ func Asr(audioContent []byte) string {
 				logger.Error.Println(string(message))
 				continue
 			}
-			logger.Error.Println(result)
+			logger.Info.Println(result)
 			if result["code"] == "0" {
 				var asrResult AsrResult
 				if result["action"] == "started" {
@@ -112,7 +112,7 @@ func Asr(audioContent []byte) string {
 			time.Sleep(50 * time.Millisecond)
 		}
 		// 上传结束符
-		if err := c.WriteMessage(websocket.TextMessage, []byte(END_TAG)); err != nil {
+		if err := c.WriteMessage(websocket.BinaryMessage, []byte(END_TAG)); err != nil {
 			logger.Error.Println(err.Error())
 		} else {
 			println("send end tag success, ", len(END_TAG))
