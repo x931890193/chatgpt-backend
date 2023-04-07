@@ -37,3 +37,5 @@ XunFei：
   TTSAppKey:
   ASRAppKey:
   TTSAppSecret:
+  ASRStreamAPISecret:
+  ASRStreamAPIKey:

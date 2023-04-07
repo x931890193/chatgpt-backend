@@ -160,3 +160,7 @@ type Delta struct {
 	Role    Role   `json:"role"`
 	Content string `json:"content"`
 }
+
+type AsrResponse struct {
+	Text string `json:"text"`
+}

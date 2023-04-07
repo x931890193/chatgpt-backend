@@ -4,9 +4,12 @@ import (
 	"chatgpt-backend/config"
 	"chatgpt-backend/service"
 	"chatgpt-backend/types"
+	"chatgpt-backend/utils/xunfei"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"io"
 	"net/http"
+	"os"
 )
 
 var ai = &service.OpenAi{ApiKey: config.Cfg.OpenAI.ApiKey, ApiBaseUrl: config.Cfg.OpenAI.ApiBaseUrl}
@@ -81,4 +84,29 @@ func ModelList(c *gin.Context) {
 		})
 	}
 	c.JSON(http.StatusOK, types.BaseResp{Data: resModel})
+}
+
+func HandleAsr(c *gin.Context) {
+	file, err := c.FormFile("audioData")
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "Error uploading audio data", Status: types.Failed})
+		return
+	}
+	audioFile, err := file.Open()
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "Error opening audio file", Status: types.Failed})
+		return
+	}
+	audioData, err := io.ReadAll(audioFile)
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "Error reading audio data", Status: types.Failed})
+		return
+	}
+	err = os.WriteFile(`111.wav`, audioData, 0655)
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "Error saveing audio data", Status: types.Failed})
+		return
+	}
+	text, _ := xunfei.AsrStreamClient.Asr(audioFile)
+	c.JSON(http.StatusOK, types.BaseResp{Data: types.AsrResponse{Text: text}})
 }
