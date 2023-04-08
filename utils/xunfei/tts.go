@@ -73,7 +73,7 @@ func (tts *TTS) createUrl() string {
 	date := time.Now().UTC().Format(time.RFC1123)
 
 	// Concatenate signature origin string
-	signatureOrigin := "host: ws-api.xfyun.cn\n"
+	signatureOrigin := "host: wss-api.xfyun.cn\n"
 	signatureOrigin += "date: " + date + "\n"
 	signatureOrigin += "GET /v2/tts HTTP/1.1"
 
@@ -93,7 +93,7 @@ func (tts *TTS) createUrl() string {
 	v := url.Values{}
 	v.Set("authorization", authorization)
 	v.Set("date", date)
-	v.Set("host", "ws-api.xfyun.cn")
+	v.Set("host", "wss-api.xfyun.cn")
 
 	// Concatenate query parameters to URL
 	urlBase += "?" + v.Encode()
