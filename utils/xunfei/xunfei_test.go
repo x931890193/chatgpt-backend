@@ -20,6 +20,13 @@ func TestAsrRealtime(t *testing.T) {
 func TestTTS(t *testing.T) {
 	res, err := TtsClient.TTS("你好你叫什么名字吗")
 	println(res, err, 111)
+	res, err = TtsClient.TTS("你好你叫什么名字吗")
+	println(res, err, 111)
+	res, err = TtsClient.TTS("你好你叫什么名字吗")
+	println(res, err, 111)
+	res, err = TtsClient.TTS("你好你叫什么名字吗")
+	println(res, err, 111)
+
 	f, err := os.Create("111.mp3")
 	if err != nil {
 		return

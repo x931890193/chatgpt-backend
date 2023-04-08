@@ -73,7 +73,7 @@ func (tts *TTS) createUrl() string {
 	date := time.Now().UTC().Format(time.RFC1123)
 
 	// Concatenate signature origin string
-	signatureOrigin := "host: wss-api.xfyun.cn\n"
+	signatureOrigin := "host: ws-api.xfyun.cn\n"
 	signatureOrigin += "date: " + date + "\n"
 	signatureOrigin += "GET /v2/tts HTTP/1.1"
 
@@ -93,12 +93,10 @@ func (tts *TTS) createUrl() string {
 	v := url.Values{}
 	v.Set("authorization", authorization)
 	v.Set("date", date)
-	v.Set("host", "wss-api.xfyun.cn")
+	v.Set("host", "ws-api.xfyun.cn")
 
 	// Concatenate query parameters to URL
-	urlBase += "?" + v.Encode()
-
-	return urlBase
+	return urlBase + "?" + v.Encode()
 }
 
 func (tts *TTS) newTTSRequest(text string) *ttsRequest {
@@ -122,10 +120,12 @@ func (tts *TTS) newTTSRequest(text string) *ttsRequest {
 func (tts *TTS) TTS(text string) ([]byte, error) {
 	resStream := []byte{}
 	wssUrl := tts.createUrl()
+	println(111, wssUrl)
 	d := websocket.Dialer{HandshakeTimeout: 5 * time.Second}
-	c, _, err := d.Dial(wssUrl, nil)
+	c, r, err := d.Dial(wssUrl, nil)
+	logger.Info.Println("TTS websocket conn：", r)
 	if err != nil {
-		logger.Error.Println(err.Error())
+		logger.Error.Println("TTS", err.Error())
 		return nil, err
 	}
 	defer func(c *websocket.Conn) {
@@ -144,7 +144,7 @@ func (tts *TTS) TTS(text string) ([]byte, error) {
 		for {
 			err := c.WriteMessage(websocket.TextMessage, reqByte)
 			if err != nil {
-				logger.Error.Println(fmt.Sprintf("send msg error! %s", reqByte))
+				logger.Error.Println("TTS", fmt.Sprintf("send msg error! %s", reqByte))
 				break
 			}
 			break
