@@ -122,7 +122,8 @@ func (tts *TTS) newTTSRequest(text string) *ttsRequest {
 func (tts *TTS) TTS(text string) ([]byte, error) {
 	resStream := []byte{}
 	wssUrl := tts.createUrl()
-	c, _, err := websocket.DefaultDialer.Dial(wssUrl, nil)
+	d := websocket.Dialer{HandshakeTimeout: 5 * time.Second}
+	c, _, err := d.Dial(wssUrl, nil)
 	if err != nil {
 		logger.Error.Println(err.Error())
 		return nil, err
