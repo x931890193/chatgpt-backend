@@ -119,13 +119,13 @@ func (tts *TTS) newTTSRequest(text string) *ttsRequest {
 	}
 }
 
-func (tts *TTS) TTS(text string) []byte {
+func (tts *TTS) TTS(text string) ([]byte, error) {
 	resStream := []byte{}
 	wssUrl := tts.createUrl()
 	c, _, err := websocket.DefaultDialer.Dial(wssUrl, nil)
 	if err != nil {
 		logger.Error.Println(err.Error())
-		return nil
+		return nil, err
 	}
 	defer func(c *websocket.Conn) {
 		err := c.Close()
@@ -182,5 +182,5 @@ func (tts *TTS) TTS(text string) []byte {
 		}
 	}(wg)
 	wg.Wait()
-	return resStream
+	return resStream, err
 }

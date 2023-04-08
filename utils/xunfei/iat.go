@@ -181,10 +181,8 @@ func (asr *AsrStream) assembleAuthUrl(hosturl string) string {
 	signString := []string{"host: " + ul.Host, "date: " + date, "GET " + ul.Path + " HTTP/1.1"}
 	//拼接签名字符串
 	sgin := strings.Join(signString, "\n")
-	fmt.Println(sgin)
 	//签名结果
 	sha := HmacWithShaTobase64("hmac-sha256", sgin, asr.AppSecret)
-	fmt.Println(sha)
 	//构建请求参数 此时不需要urlencoding
 	authUrl := fmt.Sprintf("hmac username=\"%s\", algorithm=\"%s\", headers=\"%s\", signature=\"%s\"", asr.AppKey,
 		"hmac-sha256", "host date request-line", sha)
