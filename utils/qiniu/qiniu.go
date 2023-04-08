@@ -77,7 +77,7 @@ func UploadStream(key string, data []byte) *storage.PutRet {
 		logger.Error.Println(fmt.Sprintf("upload to qiniu error: %v", err.Error()))
 		return nil
 	}
-	logger.Error.Println(fmt.Sprintf("upload to qiniu success, key: %v, hash: %v", ret.Key, ret.Hash))
+	logger.Info.Println(fmt.Sprintf("upload to qiniu success, key: %v, hash: %v", ret.Key, ret.Hash))
 	return &ret
 }
 

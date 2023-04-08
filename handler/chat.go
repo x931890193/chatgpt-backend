@@ -4,12 +4,11 @@ import (
 	"chatgpt-backend/config"
 	"chatgpt-backend/service"
 	"chatgpt-backend/types"
+	"chatgpt-backend/utils/qiniu"
 	"chatgpt-backend/utils/xunfei"
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"io"
 	"net/http"
-	"os"
 )
 
 var ai = &service.OpenAi{ApiKey: config.Cfg.OpenAI.ApiKey, ApiBaseUrl: config.Cfg.OpenAI.ApiBaseUrl}
@@ -33,11 +32,16 @@ func Chat(c *gin.Context) {
 		c.JSON(http.StatusOK, types.BaseResp{Message: err.Error(), Status: types.Failed})
 		return
 	}
-	conversationId := req.Options.ConversationId
-	if conversationId == "" {
-		conversationId = uuid.New().String()
+	if resp.Text != "" {
+		ttsBytes, err := xunfei.TtsClient.TTS(resp.Text)
+		if err == nil {
+			key := fmt.Sprintf("gpt/tts/%s/%s.mp3", resp.ConversationId, resp.Id)
+			uploadRes := qiniu.UploadStream(key, ttsBytes)
+			if uploadRes != nil {
+				resp.AudioUrl = fmt.Sprintf("%s%s", config.Cfg.Qiniu.Host, key)
+			}
+		}
 	}
-	resp.AudioUrl = "https://cdn.mongona.com/music/87d7ee2a2cdad1e5e8b0704823ee66a7.mp3"
 	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
 }
 
@@ -95,16 +99,6 @@ func HandleAsr(c *gin.Context) {
 	audioFile, err := file.Open()
 	if err != nil {
 		c.JSON(http.StatusOK, types.BaseResp{Message: "Error opening audio file", Status: types.Failed})
-		return
-	}
-	audioData, err := io.ReadAll(audioFile)
-	if err != nil {
-		c.JSON(http.StatusOK, types.BaseResp{Message: "Error reading audio data", Status: types.Failed})
-		return
-	}
-	err = os.WriteFile(`111.wav`, audioData, 0655)
-	if err != nil {
-		c.JSON(http.StatusOK, types.BaseResp{Message: "Error saveing audio data", Status: types.Failed})
 		return
 	}
 	text, _ := xunfei.AsrStreamClient.Asr(audioFile)
