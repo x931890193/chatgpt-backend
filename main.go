@@ -3,7 +3,7 @@ package main
 import (
 	"chatgpt-backend/config"
 	"chatgpt-backend/logger"
-	//_ "chatgpt-backend/model/conn"
+	"chatgpt-backend/model"
 	"chatgpt-backend/router"
 	"context"
 	"fmt"
@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	model.InitMysqlDB()
 	engine := router.SetupServer()
 	conf := config.Cfg
 	serverUrl := fmt.Sprintf("%s:%s", conf.Server.Host, conf.Server.Port)
