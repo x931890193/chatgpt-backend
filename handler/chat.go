@@ -8,6 +8,7 @@ import (
 	"chatgpt-backend/utils/xunfei"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
 )
 
@@ -103,4 +104,58 @@ func HandleAsr(c *gin.Context) {
 	}
 	text, _ := xunfei.AsrStreamClient.Asr(audioFile)
 	c.JSON(http.StatusOK, types.BaseResp{Data: types.AsrResponse{Text: text}})
+}
+
+func Advance(c *gin.Context) {
+	resp := types.AdvanceResponse{
+		SystemMessage: "You are ChatGPT, a large language model trained by OpenAI. Follow the user\\'s instructions carefully. Respond using markdown.",
+		Model:         "ggggg",
+		Image: []types.Image{{
+			Id:     "111",
+			Name:   "111",
+			Status: "finished",
+			Url:    "https://pro-cs-freq.kefutoutiao.com/icon/tid26661/image_1582707875463_vpnlo.png",
+		},
+		},
+		ModelList: []types.OptionModel{{
+			Label: "1111111",
+			Value: "111111",
+		}},
+	}
+	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
+}
+
+func Image(c *gin.Context) {
+	formData, _ := c.FormFile("imageData")
+	if formData != nil {
+		fp, err := formData.Open()
+		if err != nil {
+			c.JSON(http.StatusOK, types.BaseResp{Message: "Error open image data", Status: types.Failed})
+			return
+		}
+		key := fmt.Sprintf("gpt/image/%s", formData.Filename)
+		imageBytes, err := io.ReadAll(fp)
+		if err != nil {
+			c.JSON(http.StatusOK, types.BaseResp{Message: "Error read audio data", Status: types.Failed})
+			return
+		}
+		uploadRes := qiniu.UploadStream(key, imageBytes)
+		if uploadRes != nil {
+			imagerl := fmt.Sprintf("%s%s", config.Cfg.Qiniu.Host, key)
+			c.JSON(http.StatusOK, types.BaseResp{Data: types.Image{
+				Id:     "111",
+				Name:   "111",
+				Status: "finished",
+				Url:    imagerl,
+			}})
+		}
+	}
+}
+
+func OverView(c *gin.Context) {
+	c.JSON(http.StatusOK, types.BaseResp{Data: types.UserInfo{
+		Avatar:      "https://pro-cs-freq.kefutoutiao.com/icon/tid26661/image_1582707875463_vpnlo.png",
+		Name:        "1111",
+		Description: "2222",
+	}})
 }
