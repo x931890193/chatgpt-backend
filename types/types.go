@@ -164,3 +164,28 @@ type Delta struct {
 type AsrResponse struct {
 	Text string `json:"text"`
 }
+
+type AdvanceResponse struct {
+	SystemMessage string        `json:"systemMessage"`
+	Model         string        `json:"model"`
+	Image         []Image       `json:"image"`
+	ModelList     []OptionModel `json:"modelList"`
+}
+
+type Image struct {
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Status string `json:"status"`
+	Url    string `json:"url"`
+}
+
+type OptionModel struct {
+	Label string `json:"label"`
+	Value string `json:"value"`
+}
+
+type UserInfo struct {
+	Avatar      string `json:"avatar"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
