@@ -23,7 +23,7 @@ func SetupServer() *gin.Engine {
 	//router.Use(middleware.LogMiddleware())
 	router.HandleMethodNotAllowed = true
 	router.GET("/", handler.Hello)
-	//router.Use(middleware.RequestMiddleware())
+	router.Use(middleware.RequestMiddleware())
 	//router.Use(middleware.BaseAuthMiddleware())
 	api := router.Group("/api")
 	{
