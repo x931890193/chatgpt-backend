@@ -39,6 +39,7 @@ type BaseResp struct {
 type ConversationRequest struct {
 	ConversationId  string `json:"conversationId"`
 	ParentMessageId string `json:"parentMessageId"`
+	MessageId       string `json:"messageId"`
 }
 
 type ChatRequest struct {
@@ -189,3 +190,39 @@ type UserInfo struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
+
+type History struct {
+	Title  string `json:"title"`
+	IsEdit bool   `json:"isEdit"`
+	Uuid   int    `json:"uuid"`
+}
+
+type ChatHistory struct {
+	Active       int       `json:"active"`
+	UsingContext bool      `json:"usingContext"`
+	History      []History `json:"history"`
+	Chat         []Chat    `json:"chat"`
+}
+
+type Chat struct {
+	Uuid int        `json:"uuid"`
+	Data []ChatBase `json:"data"`
+}
+
+type RequestOptions struct {
+	Prompt  string              `json:"prompt"`
+	Options ConversationRequest `json:"options"`
+}
+
+type ChatBase struct {
+	DateTime            string              `json:"dateTime"`
+	Text                string              `json:"text"`
+	Inversion           bool                `json:"inversion"`
+	Error               bool                `json:"error"`
+	Loading             bool                `json:"loading"`
+	ConversationOptions ConversationRequest `json:"conversation_options"`
+	RequestOptions      RequestOptions      `json:"requestOptions"`
+	AudioUrl            string              `json:"audio_url"`
+}
+
+//

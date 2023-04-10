@@ -37,7 +37,7 @@ func TestTTS(t *testing.T) {
 func TestAsrStream(t *testing.T) {
 	audio, _ := os.Open("16k_10.pcm")
 	//content, _ := io.ReadAll(audio)
-	res, err := AsrStreamClient.Asr(audio)
+	_, res, err := AsrStreamClient.Asr(audio)
 	if err != nil {
 		println(err.Error())
 	}

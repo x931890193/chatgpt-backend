@@ -49,17 +49,19 @@ var AsrStreamClient = AsrStream{
 	AppSecret: config.Cfg.XunFei.ASRStreamAPISecret,
 }
 
-func (asr *AsrStream) Asr(audio io.Reader) (string, error) {
+func (asr *AsrStream) Asr(audio io.Reader) ([]byte, string, error) {
 	respText := ""
+	var buffer = make([]byte, FrameSize)
+
 	st := time.Now()
 	d := websocket.Dialer{HandshakeTimeout: 5 * time.Second}
 	wssUrl := asr.assembleAuthUrl(hostUrl)
 	c, resp, err := d.Dial(wssUrl, nil)
 	if err != nil {
 		logger.Error.Println(err)
-		return "", err
+		return buffer, "", err
 	} else if resp.StatusCode != 101 {
-		return readResp(resp) + err.Error(), err
+		return buffer, readResp(resp) + err.Error(), err
 	}
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
@@ -67,7 +69,6 @@ func (asr *AsrStream) Asr(audio io.Reader) (string, error) {
 	go func(wg *sync.WaitGroup) {
 		defer wg.Done()
 		status := StatusFirstFrame //音频的状态信息，标识音频是第一帧，还是中间帧、最后一帧
-		var buffer = make([]byte, FrameSize)
 		for {
 			len, err := audio.Read(buffer)
 			if err != nil {
@@ -165,7 +166,7 @@ func (asr *AsrStream) Asr(audio io.Reader) (string, error) {
 		}
 	}(wg)
 	wg.Wait()
-	return respText, nil
+	return buffer, respText, nil
 }
 
 // 创建鉴权url  apikey 即 hmac username
