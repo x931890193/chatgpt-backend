@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"chatgpt-backend/config"
 	"chatgpt-backend/logger"
+	"chatgpt-backend/model"
 	"chatgpt-backend/types"
 	"chatgpt-backend/utils/useragent"
 	"fmt"
@@ -22,11 +22,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		token = tokenSlice[1]
-		if token != config.Cfg.OpenAI.ApiKey && token != "111111" {
+		// a8491c38-3b4b-4b14-8eaf-cbde20090383
+		user, err := model.GetUserBySessionId(token)
+		if err != nil {
 			c.JSON(http.StatusOK, types.BaseResp{Message: "鉴权参数错误", Status: types.AuthError})
 			c.Abort()
 			return
 		}
+		c.Set(types.MiddlewareUser, *user)
 		c.Next()
 	}
 }

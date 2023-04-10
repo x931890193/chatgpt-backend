@@ -30,12 +30,26 @@ type balance struct {
 
 type ModelResp struct {
 	Data []struct {
-		Id         string        `json:"id"`
-		Object     string        `json:"object"`
-		OwnedBy    string        `json:"owned_by"`
-		Permission []interface{} `json:"permission"`
+		Id         string       `json:"id"`
+		Object     string       `json:"object"`
+		OwnedBy    string       `json:"owned_by"`
+		Permission []Permission `json:"permission"`
 	} `json:"data"`
 	Object string `json:"object"`
+}
+
+type Permission struct {
+	Object             string  `json:"object"`
+	AllowLogprobs      bool    `json:"allow_logprobs"`
+	AllowView          bool    `json:"allow_view"`
+	IsBlocking         bool    `json:"is_blocking"`
+	ID                 string  `json:"id"`
+	Created            int64   `json:"created"`
+	AllowCreateEngine  bool    `json:"allow_create_engine"`
+	AllowSampling      bool    `json:"allow_sampling"`
+	AllowSearchIndices bool    `json:"allow_search_indices"`
+	Organization       string  `json:"organization"`
+	Group              *string `json:"group"`
 }
 
 type OpenAi struct {

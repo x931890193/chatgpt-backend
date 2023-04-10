@@ -11,6 +11,8 @@ const (
 type ApiModel string
 
 const (
+	MiddlewareUser                     = "MiddlewareUser"
+	Finished                           = "finished"
 	ChatGPTAPI                ApiModel = "ChatGPTAPI"
 	ChatGPTUnofficialProxyAPI ApiModel = "ChatGPTUnofficialProxyAPI"
 )
