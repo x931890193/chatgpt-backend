@@ -21,6 +21,8 @@ func (r ReqContentType) String() string {
 		return "application/json"
 	case ContentTypeProto:
 		return "application/x-protobuf"
+	case ContentTypeOctetStream:
+		return "application/octet-stream"
 	default:
 		logger.Error.Println("to do ContentType")
 		return ""
@@ -32,6 +34,7 @@ const (
 	UserAgent       = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
 	ContentTypeJson = iota + 1
 	ContentTypeProto
+	ContentTypeOctetStream
 )
 
 func Post(url string, data interface{}, contentType ReqContentType, extraHeaders map[string]string, proxy *http.Transport) ([]byte, error) {

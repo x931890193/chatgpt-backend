@@ -69,14 +69,23 @@ func (AccessToken) TableName() string {
 // Conversation 对话
 type Conversation struct {
 	BaseModel
-	ConversationId string `gorm:"comment: 对话ID; index;" json:"conversation_id"`
-	MessageId      string `gorm:"comment: 消息ID;  NOT NULL; index;" json:"message_id"`
-	Text           string `gorm:"comment: 对话内容; NOT NULL; type:text;" json:"text"`
-	AudioUrl       string `gorm:"comment: 对话语音;  NOT NULL; type:VARCHAR(255);" json:"audio_url"`
+	Role            string `gorm:"comment: 角色; index;" json:"role"`
+	ConversationId  string `gorm:"comment: 对话ID; index;" json:"conversation_id"`
+	MessageId       string `gorm:"comment: 消息ID;  NOT NULL; index;" json:"message_id"`
+	ParentMessageId string `gorm:"comment: 父消息id; NOT NULL; DEFAULT: ''" json:"parent_message_id"`
+	Text            string `gorm:"comment: 对话内容; NOT NULL; type:text;" json:"text"`
+	AudioUrl        string `gorm:"comment: 对话语音; NOT NULL; type:VARCHAR(255);" json:"audio_url"`
 }
 
 func (Conversation) TableName() string {
 	return "conversation"
+}
+
+type ConversationRelation struct {
+	BaseModel
+	UserID         int    `gorm:"comment: 用户ID;  NOT NULL; index;" json:"user_id"`
+	ConversationId string `gorm:"comment: 对话ID; index;" json:"conversation_id"`
+	Active         bool   `gorm:"comment: 当前激活;  NOT NULL; index;" json:"active"`
 }
 
 type Prompt struct {

@@ -102,7 +102,19 @@ func HandleAsr(c *gin.Context) {
 		c.JSON(http.StatusOK, types.BaseResp{Message: "Error opening audio file", Status: types.Failed})
 		return
 	}
-	text, _ := xunfei.AsrStreamClient.Asr(audioFile)
+	buffer, text, err := xunfei.AsrStreamClient.Asr(audioFile)
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "Error Parse audio data", Status: types.Failed})
+		return
+	}
+	conversationId, _ := c.GetPostForm("conversation_Id")
+
+	MessageId, _ := c.GetPostForm("message_Id")
+
+	key := fmt.Sprintf("gpt/asr/%s/%s.mp3", conversationId, MessageId)
+
+	go qiniu.UploadStream(key, buffer)
+
 	c.JSON(http.StatusOK, types.BaseResp{Data: types.AsrResponse{Text: text}})
 }
 
@@ -158,4 +170,9 @@ func OverView(c *gin.Context) {
 		Name:        "1111",
 		Description: "2222",
 	}})
+}
+
+func ChatHistory(c *gin.Context) {
+	resp := types.ChatHistory{Active: 111111, History: make([]types.History, 0), Chat: make([]types.Chat, 0)}
+	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
 }
