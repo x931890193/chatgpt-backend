@@ -48,11 +48,36 @@ type User struct {
 	Avatar      string `gorm:"comment: 用户头像; type:VARCHAR(255)" json:"avatar"`
 	Name        string `gorm:"comment: 用户名; type:VARCHAR(255)" json:"name"`
 	Description string `gorm:"comment: 用户描述; type:VARCHAR(255)" json:"description"`
-	Model       string `gorm:"comment: 用户模型; type:VARCHAR(255)" json:"model"`
 }
 
 func (User) TableName() string {
 	return "user"
+}
+
+// UserModel 用户对话对象
+type UserModel struct {
+	BaseModel
+	UserID  int    `gorm:"comment: 用户ID; NOT NULL; index;" json:"user_id"`
+	Image   string `gorm:"comment: 对方头像; type:VARCHAR(255)" json:"image"`
+	ModelId int    `gorm:"comment: 用户模型id; index" json:"model_id"`
+	Prompt  string `gorm:"comment: 模型预设信息; type:VARCHAR(255)" json:"prompt"`
+}
+
+func (UserModel) TableName() string {
+	return "user_model"
+}
+
+// GPTModel 所有模型
+type GPTModel struct {
+	BaseModel
+	Name       string `gorm:"comment: 模型信息; type:VARCHAR(255)" json:"name"`
+	Object     string `gorm:"type:VARCHAR(255)" json:"object"`
+	OwnedBy    string `gorm:"type:VARCHAR(255)" json:"owned_by"`
+	Permission string `gorm:"type:text" json:"permission"`
+}
+
+func (GPTModel) TableName() string {
+	return "gpt_model"
 }
 
 type AccessToken struct {
@@ -133,6 +158,8 @@ func InitMysqlDB() {
 		&Request{},
 		&AccessToken{},
 		&Conversation{},
+		&GPTModel{},
+		&UserModel{},
 	)
 	return
 }

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"chatgpt-backend/config"
+	"chatgpt-backend/model"
 	"chatgpt-backend/service"
 	"chatgpt-backend/types"
 	"chatgpt-backend/utils/qiniu"
@@ -15,7 +16,7 @@ import (
 var ai = &service.OpenAi{ApiKey: config.Cfg.OpenAI.ApiKey, ApiBaseUrl: config.Cfg.OpenAI.ApiBaseUrl}
 
 func Session(c *gin.Context) {
-	c.JSON(http.StatusOK, types.BaseResp{Data: types.SessionResp{Auth: true, Model: "ChatGPTAPI"}, Status: types.Success})
+	c.JSON(http.StatusOK, types.BaseResp{Data: types.SessionResp{Auth: false, Model: "ChatGPTAPI"}, Status: types.Success})
 }
 
 func Chat(c *gin.Context) {
@@ -68,7 +69,8 @@ func Verify(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, types.BaseResp{Message: "Secret key is empty", Status: types.AuthError})
 		return
 	}
-	if req.Token != config.Cfg.OpenAI.ApiKey && req.Token != "111111" {
+	_, err := model.GetUserBySessionId(req.Token)
+	if err != nil {
 		c.JSON(http.StatusOK, types.BaseResp{Message: "密钥无效 | Secret key is invalid", Status: types.AuthError})
 		return
 	}
@@ -119,20 +121,44 @@ func HandleAsr(c *gin.Context) {
 }
 
 func Advance(c *gin.Context) {
+	v, _ := c.Get(types.MiddlewareUser)
+	user, ok := v.(model.User)
+	if !ok {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "User Error!", Status: types.AuthError})
+		return
+	}
+	userModel, err := model.GetUserModel(user.ID)
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "Get User Model Error!", Status: types.Failed})
+		return
+	}
+	gptModel, err := model.GetGPTModelById(userModel.ModelId)
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "Get Model Info Error!", Status: types.Failed})
+		return
+	}
+	GPTModels, err := model.GetAllGPTModels()
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "Get All GPT Model Info Error!", Status: types.Failed})
+		return
+	}
+	// "You are ChatGPT, a large language model trained by OpenAI. Follow the user's instructions carefully. Respond using markdown."
+	modelList := []types.OptionModel{}
+	for _, m := range GPTModels {
+		modelList = append(modelList, types.OptionModel{
+			Label: m.Name,
+			Value: m.Name,
+		})
+	}
 	resp := types.AdvanceResponse{
-		SystemMessage: "You are ChatGPT, a large language model trained by OpenAI. Follow the user\\'s instructions carefully. Respond using markdown.",
-		Model:         "ggggg",
+		SystemMessage: userModel.Prompt,
+		Model:         gptModel.Name,
 		Image: []types.Image{{
-			Id:     "111",
-			Name:   "111",
-			Status: "finished",
-			Url:    "https://pro-cs-freq.kefutoutiao.com/icon/tid26661/image_1582707875463_vpnlo.png",
+			Status: types.Finished,
+			Url:    userModel.Image,
 		},
 		},
-		ModelList: []types.OptionModel{{
-			Label: "1111111",
-			Value: "111111",
-		}},
+		ModelList: modelList,
 	}
 	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
 }
@@ -165,10 +191,16 @@ func Image(c *gin.Context) {
 }
 
 func OverView(c *gin.Context) {
+	v, _ := c.Get(types.MiddlewareUser)
+	user, ok := v.(model.User)
+	if !ok {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "User Error!", Status: types.AuthError})
+		return
+	}
 	c.JSON(http.StatusOK, types.BaseResp{Data: types.UserInfo{
-		Avatar:      "https://pro-cs-freq.kefutoutiao.com/icon/tid26661/image_1582707875463_vpnlo.png",
-		Name:        "1111",
-		Description: "2222",
+		Avatar:      user.Avatar,
+		Name:        user.Name,
+		Description: user.Description,
 	}})
 }
 
