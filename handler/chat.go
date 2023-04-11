@@ -155,7 +155,7 @@ func Advance(c *gin.Context) {
 		Model:         gptModel.Name,
 		Image: []types.Image{{
 			Status: types.Finished,
-			Url:    userModel.Image,
+			Url:    fmt.Sprintf("%s%s", config.Cfg.Qiniu.Host, userModel.Image),
 		},
 		},
 		ModelList: modelList,
@@ -164,6 +164,12 @@ func Advance(c *gin.Context) {
 }
 
 func Image(c *gin.Context) {
+	v, _ := c.Get(types.MiddlewareUser)
+	user, ok := v.(model.User)
+	if !ok {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "User Error!", Status: types.AuthError})
+		return
+	}
 	formData, _ := c.FormFile("imageData")
 	if formData != nil {
 		fp, err := formData.Open()
@@ -179,13 +185,20 @@ func Image(c *gin.Context) {
 		}
 		uploadRes := qiniu.UploadStream(key, imageBytes)
 		if uploadRes != nil {
-			imagerl := fmt.Sprintf("%s%s", config.Cfg.Qiniu.Host, key)
+			imageUrl := fmt.Sprintf("%s%s", config.Cfg.Qiniu.Host, key)
+			_, err := model.UpdateUserModelByUserid(user.ID, "", key)
+			if err != nil {
+				c.JSON(http.StatusOK, types.BaseResp{Message: "Error update image url", Status: types.Failed})
+
+				return
+			}
 			c.JSON(http.StatusOK, types.BaseResp{Data: types.Image{
-				Id:     "111",
-				Name:   "111",
 				Status: "finished",
-				Url:    imagerl,
+				Url:    imageUrl,
 			}})
+
+		} else {
+			c.JSON(http.StatusOK, types.BaseResp{Message: "Error upload image data", Status: types.Failed})
 		}
 	}
 }
