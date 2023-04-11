@@ -168,6 +168,11 @@ type AsrResponse struct {
 	Text string `json:"text"`
 }
 
+type AdvanceRequest struct {
+	SystemMessage string `json:"systemMessage"`
+	Model         string `json:"model"`
+}
+
 type AdvanceResponse struct {
 	SystemMessage string        `json:"systemMessage"`
 	Model         string        `json:"model"`
