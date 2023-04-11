@@ -153,7 +153,7 @@ func Advance(c *gin.Context) {
 	resp := types.AdvanceResponse{
 		SystemMessage: userModel.Prompt,
 		Model:         gptModel.Name,
-		Image: []types.Image{{
+		Avatar: []types.Image{{
 			Status: types.Finished,
 			Url:    fmt.Sprintf("%s%s", config.Cfg.Qiniu.Host, userModel.Image),
 		},

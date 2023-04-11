@@ -176,7 +176,7 @@ type AdvanceRequest struct {
 type AdvanceResponse struct {
 	SystemMessage string        `json:"systemMessage"`
 	Model         string        `json:"model"`
-	Image         []Image       `json:"image"`
+	Avatar        []Image       `json:"avatar"`
 	ModelList     []OptionModel `json:"modelList"`
 }
 
