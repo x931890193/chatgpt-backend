@@ -163,6 +163,26 @@ func Advance(c *gin.Context) {
 	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
 }
 
+func AdvanceSave(c *gin.Context) {
+	v, _ := c.Get(types.MiddlewareUser)
+	user, ok := v.(model.User)
+	if !ok {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "User Error!", Status: types.AuthError})
+		return
+	}
+	req := types.AdvanceRequest{}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: err.Error(), Status: types.Failed})
+		return
+	}
+	_, err := model.UpdateUserModelByUserid(user.ID, req.SystemMessage, "")
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "Error update prompt", Status: types.Failed})
+		return
+	}
+	c.JSON(http.StatusOK, types.BaseResp{})
+}
+
 func Image(c *gin.Context) {
 	v, _ := c.Get(types.MiddlewareUser)
 	user, ok := v.(model.User)
@@ -189,7 +209,6 @@ func Image(c *gin.Context) {
 			_, err := model.UpdateUserModelByUserid(user.ID, "", key)
 			if err != nil {
 				c.JSON(http.StatusOK, types.BaseResp{Message: "Error update image url", Status: types.Failed})
-
 				return
 			}
 			c.JSON(http.StatusOK, types.BaseResp{Data: types.Image{
@@ -215,6 +234,26 @@ func OverView(c *gin.Context) {
 		Name:        user.Name,
 		Description: user.Description,
 	}})
+}
+
+func OverViewSave(c *gin.Context) {
+	v, _ := c.Get(types.MiddlewareUser)
+	user, ok := v.(model.User)
+	if !ok {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "User Error!", Status: types.AuthError})
+		return
+	}
+	req := types.UserInfo{}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: err.Error(), Status: types.Failed})
+		return
+	}
+	_, err := model.UpdateUserInfoByUserid(user.ID, req.Avatar, req.Name, req.Description)
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "Error update General", Status: types.Failed})
+		return
+	}
+	c.JSON(http.StatusOK, types.BaseResp{})
 }
 
 func ChatHistory(c *gin.Context) {

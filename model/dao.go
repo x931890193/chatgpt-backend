@@ -70,6 +70,24 @@ func UpdateUserModelByUserid(userID int, prompt, image string) (*UserModel, erro
 	return &u, nil
 }
 
+func UpdateUserInfoByUserid(userID int, avatar, name, description string) (*User, error) {
+	u := User{}
+	if avatar != "" {
+		u.Avatar = avatar
+	}
+	if name != "" {
+		u.Name = name
+	}
+	if description != "" {
+		u.Description = description
+	}
+	if err := MysqlConn.Model(&User{}).Where("id =?", userID).Updates(u).Error; err != nil {
+		logger.Error.Println(err)
+		return nil, err
+	}
+	return &u, nil
+}
+
 func (t *AccessToken) CreateToken(user *User) (*AccessToken, error) {
 	sessionId := uuid.New().String()
 	token := &AccessToken{
