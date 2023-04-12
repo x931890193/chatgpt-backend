@@ -232,4 +232,11 @@ type ChatBase struct {
 	AudioUrl            string              `json:"audio_url"`
 }
 
-//
+type Prompt struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type PromptListResp struct {
+	PromptList []Prompt `json:"promptList"`
+}
