@@ -60,7 +60,9 @@ type UserModel struct {
 	UserID  int    `gorm:"comment: 用户ID; NOT NULL; index;" json:"user_id"`
 	Image   string `gorm:"comment: 对方头像; type:VARCHAR(255)" json:"image"`
 	ModelId int    `gorm:"comment: 用户模型id; index" json:"model_id"`
-	Prompt  string `gorm:"comment: 模型预设信息; type:VARCHAR(255)" json:"prompt"`
+	Prompt  string `gorm:"comment: 模型预设信息; type:text" json:"prompt"`
+	Profile string `gorm:"comment: 人物介绍; type:text" json:"profile"`
+	Name    string `gorm:"comment: 人物名称; type:VARCHAR(255)" json:"name"`
 }
 
 func (UserModel) TableName() string {
