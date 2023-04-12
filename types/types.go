@@ -171,6 +171,8 @@ type AsrResponse struct {
 type AdvanceRequest struct {
 	SystemMessage string `json:"systemMessage"`
 	Model         string `json:"model"`
+	Profile       string `json:"profile"`
+	Name          string `json:"name"`
 }
 
 type AdvanceResponse struct {
@@ -178,6 +180,8 @@ type AdvanceResponse struct {
 	Model         string        `json:"model"`
 	Avatar        []Image       `json:"avatar"`
 	ModelList     []OptionModel `json:"modelList"`
+	Profile       string        `json:"profile"`
+	Name          string        `json:"name"`
 }
 
 type Image struct {
@@ -193,9 +197,9 @@ type OptionModel struct {
 }
 
 type UserInfo struct {
-	Avatar      string `json:"avatar"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Avatar      []Image `json:"avatar"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
 }
 
 type History struct {

@@ -56,13 +56,19 @@ func GetAllGPTModels() ([]*GPTModel, error) {
 	return models, nil
 }
 
-func UpdateUserModelByUserid(userID int, prompt, image string) (*UserModel, error) {
+func UpdateUserModelByUserid(userID int, prompt, image, profile, name string) (*UserModel, error) {
 	u := UserModel{}
 	if prompt != "" {
 		u.Prompt = prompt
 	}
 	if image != "" {
 		u.Image = image
+	}
+	if profile != "" {
+		u.Profile = profile
+	}
+	if name != "" {
+		u.Name = name
 	}
 	if err := MysqlConn.Model(&UserModel{}).Where("user_id =?", userID).Updates(u).Error; err != nil {
 		logger.Error.Println(err)

@@ -160,6 +160,8 @@ func Advance(c *gin.Context) {
 		},
 		},
 		ModelList: modelList,
+		Profile:   userModel.Profile,
+		Name:      userModel.Name,
 	}
 	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
 }
@@ -176,7 +178,7 @@ func AdvanceSave(c *gin.Context) {
 		c.JSON(http.StatusOK, types.BaseResp{Message: err.Error(), Status: types.Failed})
 		return
 	}
-	_, err := model.UpdateUserModelByUserid(user.ID, req.SystemMessage, "")
+	_, err := model.UpdateUserModelByUserid(user.ID, req.SystemMessage, "", req.Profile, req.Name)
 	if err != nil {
 		c.JSON(http.StatusOK, types.BaseResp{Message: "Error update prompt", Status: types.Failed})
 		return
@@ -207,10 +209,19 @@ func Image(c *gin.Context) {
 		uploadRes := qiniu.UploadStream(key, imageBytes)
 		if uploadRes != nil {
 			imageUrl := fmt.Sprintf("%s%s", config.Cfg.Qiniu.Host, key)
-			_, err := model.UpdateUserModelByUserid(user.ID, "", key)
-			if err != nil {
-				c.JSON(http.StatusOK, types.BaseResp{Message: "Error update image url", Status: types.Failed})
-				return
+			_, ok = c.GetPostForm("isUser")
+			if ok {
+				_, err = model.UpdateUserInfoByUserid(user.ID, key, "", "")
+				if err != nil {
+					c.JSON(http.StatusOK, types.BaseResp{Message: "Error update image url", Status: types.Failed})
+					return
+				}
+			} else {
+				_, err = model.UpdateUserModelByUserid(user.ID, "", key, "", "")
+				if err != nil {
+					c.JSON(http.StatusOK, types.BaseResp{Message: "Error update image url", Status: types.Failed})
+					return
+				}
 			}
 			c.JSON(http.StatusOK, types.BaseResp{Data: types.Image{
 				Status: "finished",
@@ -231,7 +242,10 @@ func OverView(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, types.BaseResp{Data: types.UserInfo{
-		Avatar:      user.Avatar,
+		Avatar: []types.Image{{
+			Status: types.Finished,
+			Url:    fmt.Sprintf("%s%s", config.Cfg.Qiniu.Host, user.Avatar),
+		}},
 		Name:        user.Name,
 		Description: user.Description,
 	}})
@@ -249,7 +263,7 @@ func OverViewSave(c *gin.Context) {
 		c.JSON(http.StatusOK, types.BaseResp{Message: err.Error(), Status: types.Failed})
 		return
 	}
-	_, err := model.UpdateUserInfoByUserid(user.ID, req.Avatar, req.Name, req.Description)
+	_, err := model.UpdateUserInfoByUserid(user.ID, "", req.Name, req.Description)
 	if err != nil {
 		c.JSON(http.StatusOK, types.BaseResp{Message: "Error update General", Status: types.Failed})
 		return
