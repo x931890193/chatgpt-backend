@@ -119,6 +119,10 @@ type Prompt struct {
 	Value string `gorm:"comment: v; NOT NULL; type:text;" json:"value"`
 }
 
+func (Prompt) TableName() string {
+	return "prompt"
+}
+
 // InitMysqlDB 初始化 MysqlDB 连接
 func InitMysqlDB() {
 	conf := config.Cfg
