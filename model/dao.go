@@ -3,6 +3,7 @@ package model
 import (
 	"chatgpt-backend/logger"
 	"github.com/google/uuid"
+	"gorm.io/gorm/clause"
 	"time"
 )
 
@@ -86,6 +87,24 @@ func UpdateUserInfoByUserid(userID int, avatar, name, description string) (*User
 		return nil, err
 	}
 	return &u, nil
+}
+
+func GetPromptList() ([]Prompt, error) {
+	promptList := []Prompt{}
+	if err := MysqlConn.Model(&Prompt{}).Find(&promptList).Error; err != nil {
+		logger.Error.Println(err)
+		return nil, err
+	}
+	return promptList, nil
+}
+
+func InsertPromptList(promptList []Prompt) error {
+	db := MysqlConn.Clauses(clause.Insert{Modifier: "IGNORE"})
+	if err := db.Model(&Prompt{}).CreateInBatches(&promptList, len(promptList)).Error; err != nil {
+		logger.Error.Println(err)
+		return err
+	}
+	return nil
 }
 
 func (t *AccessToken) CreateToken(user *User) (*AccessToken, error) {

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"chatgpt-backend/config"
+	"chatgpt-backend/logger"
 	"chatgpt-backend/model"
 	"chatgpt-backend/service"
 	"chatgpt-backend/types"
@@ -263,6 +264,18 @@ func ChatHistory(c *gin.Context) {
 
 func PromptList(c *gin.Context) {
 	resp := types.PromptListResp{PromptList: []types.Prompt{}}
+	promptList, err := model.GetPromptList()
+	if err != nil {
+		logger.Error.Println("Get prompt list Error!")
+		c.JSON(http.StatusOK, types.BaseResp{Data: resp})
+		return
+	}
+	for _, p := range promptList {
+		resp.PromptList = append(resp.PromptList, types.Prompt{
+			Key:   p.Key,
+			Value: p.Value,
+		})
+	}
 	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
 
 }

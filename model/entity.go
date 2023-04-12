@@ -164,6 +164,7 @@ func InitMysqlDB() {
 		&Conversation{},
 		&GPTModel{},
 		&UserModel{},
+		&Prompt{},
 	)
 	return
 }

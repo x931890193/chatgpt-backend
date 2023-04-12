@@ -4,6 +4,7 @@ import (
 	"chatgpt-backend/config"
 	"chatgpt-backend/logger"
 	"chatgpt-backend/service"
+	"chatgpt-backend/utils"
 	"encoding/json"
 	"math/rand"
 	"strconv"
@@ -64,4 +65,35 @@ func TestCreateUser(t *testing.T) {
 		return
 	}
 	logger.Info.Println(accessToken.UserID, accessToken.SessionID, model.ID, model.ModelId)
+}
+
+type originPromptList struct {
+	Act    string `json:"act"`
+	Prompt string `json:"prompt"`
+}
+
+func TestInitPrompt(t *testing.T) {
+	info, err := utils.Get("https://raw.githubusercontent.com/PlexPt/awesome-chatgpt-prompts-zh/main/prompts-zh.json", nil, utils.ContentTypeJson, nil, nil)
+	if err != nil {
+		logger.Error.Println(info)
+		return
+	}
+	res := []originPromptList{}
+	err = json.Unmarshal(info, &res)
+	if err != nil {
+		logger.Error.Println(err)
+		return
+	}
+	toInsert := []Prompt{}
+	for _, prompt := range res {
+		toInsert = append(toInsert, Prompt{
+			Key:   prompt.Act,
+			Value: prompt.Prompt,
+		})
+	}
+	err = InsertPromptList(toInsert)
+	if err != nil {
+		logger.Error.Println(err)
+		return
+	}
 }
