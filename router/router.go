@@ -41,6 +41,7 @@ func SetupServer() *gin.Engine {
 		api.POST("/image", handler.Image)
 		api.GET("/overview", handler.OverView)
 		api.POST("/overview", handler.OverViewSave)
+		api.GET("/prompt-list", handler.PromptList)
 
 	}
 	return router

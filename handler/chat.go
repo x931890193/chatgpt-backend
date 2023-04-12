@@ -260,3 +260,9 @@ func ChatHistory(c *gin.Context) {
 	resp := types.ChatHistory{Active: 111111, History: make([]types.History, 0), Chat: make([]types.Chat, 0)}
 	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
 }
+
+func PromptList(c *gin.Context) {
+	resp := types.PromptListResp{PromptList: []types.Prompt{}}
+	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
+
+}
