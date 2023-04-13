@@ -8,6 +8,7 @@ import (
 	"chatgpt-backend/types"
 	"chatgpt-backend/utils/qiniu"
 	"chatgpt-backend/utils/xunfei"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io"
@@ -272,8 +273,43 @@ func OverViewSave(c *gin.Context) {
 }
 
 func ChatHistory(c *gin.Context) {
-	resp := types.ChatHistory{Active: 111111, History: make([]types.History, 0), Chat: make([]types.Chat, 0)}
+	v, _ := c.Get(types.MiddlewareUser)
+	user, ok := v.(model.User)
+	if !ok {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "User Error!", Status: types.AuthError})
+		return
+	}
+	history, err := model.GetChatHistoryByUserID(user.ID)
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: fmt.Sprintf("Get ChatHistory Error! %s", err), Status: types.Failed})
+		return
+	}
+	resp := types.ChatHistory{}
+	err = json.Unmarshal([]byte(history.History), &resp)
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: fmt.Sprintf("Get ChatHistory Unmarshal Error! %s", err), Status: types.Failed})
+		return
+	}
 	c.JSON(http.StatusOK, types.BaseResp{Data: resp})
+}
+func ChatHistorySave(c *gin.Context) {
+	v, _ := c.Get(types.MiddlewareUser)
+	user, ok := v.(model.User)
+	if !ok {
+		c.JSON(http.StatusOK, types.BaseResp{Message: "User Error!", Status: types.AuthError})
+		return
+	}
+	req := types.ChatHistory{}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: fmt.Sprintf("Save ChatHistorySave Error %s", err.Error()), Status: types.Failed})
+		return
+	}
+	err := model.UpdateOrCreateChatHistory(user.ID, req)
+	if err != nil {
+		c.JSON(http.StatusOK, types.BaseResp{Message: fmt.Sprintf("Save ChatHistorySave Error %s", err.Error()), Status: types.Failed})
+		return
+	}
+	c.JSON(http.StatusOK, types.BaseResp{})
 }
 
 func PromptList(c *gin.Context) {
