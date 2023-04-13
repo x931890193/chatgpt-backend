@@ -86,10 +86,10 @@ func ModelList(c *gin.Context) {
 		return
 	}
 	resModel := []map[string]string{}
-	for _, model := range models.Data {
+	for _, m := range models.Data {
 		resModel = append(resModel, map[string]string{
-			"label": model.Id,
-			"value": model.Id,
+			"label": m.Id,
+			"value": m.Id,
 		})
 	}
 	c.JSON(http.StatusOK, types.BaseResp{Data: resModel})
