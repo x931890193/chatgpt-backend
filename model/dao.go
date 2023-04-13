@@ -2,6 +2,8 @@ package model
 
 import (
 	"chatgpt-backend/logger"
+	"chatgpt-backend/types"
+	"encoding/json"
 	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 	"time"
@@ -102,6 +104,32 @@ func GetPromptList() ([]Prompt, error) {
 		return nil, err
 	}
 	return promptList, nil
+}
+
+func GetChatHistoryByUserID(userID int) (*ChatHistory, error) {
+	chatHistory := &ChatHistory{}
+	chatHistory.UserID = userID
+	if err := MysqlConn.Model(&ChatHistory{}).Where(ChatHistory{UserID: userID}).Find(chatHistory).Error; err != nil {
+		logger.Error.Println(err)
+		return nil, err
+	}
+	return chatHistory, nil
+}
+
+func UpdateOrCreateChatHistory(userID int, history types.ChatHistory) error {
+	chatHistory := ChatHistory{}
+	res, err := json.Marshal(history)
+	if err != nil {
+		return err
+	}
+	historyString := string(res)
+	chatHistory.UserID = userID
+	// TODO logic delete
+	if err := MysqlConn.Model(&ChatHistory{}).Where("user_id=?", chatHistory.UserID).FirstOrCreate(&chatHistory).UpdateColumn("history", historyString).Error; err != nil {
+		logger.Error.Println(err)
+		return err
+	}
+	return nil
 }
 
 func InsertPromptList(promptList []Prompt) error {

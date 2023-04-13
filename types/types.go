@@ -205,18 +205,18 @@ type UserInfo struct {
 type History struct {
 	Title  string `json:"title"`
 	IsEdit bool   `json:"isEdit"`
-	Uuid   int    `json:"uuid"`
+	Uuid   string `json:"uuid"`
 }
 
 type ChatHistory struct {
-	Active       int       `json:"active"`
+	Active       string    `json:"active"`
 	UsingContext bool      `json:"usingContext"`
 	History      []History `json:"history"`
 	Chat         []Chat    `json:"chat"`
 }
 
 type Chat struct {
-	Uuid int        `json:"uuid"`
+	Uuid string     `json:"uuid"`
 	Data []ChatBase `json:"data"`
 }
 

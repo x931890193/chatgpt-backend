@@ -32,6 +32,7 @@ func SetupServer() *gin.Engine {
 		api.POST("/session", handler.Session)
 		api.POST("/chat-process", handler.Chat)
 		api.GET("/chat-history", handler.ChatHistory)
+		api.POST("/chat-history", handler.ChatHistorySave)
 		api.POST("/config", handler.Config)
 		api.POST("/chat", handler.Chat)
 		api.GET("/models", handler.ModelList)

@@ -82,6 +82,7 @@ func (GPTModel) TableName() string {
 	return "gpt_model"
 }
 
+// AccessToken 登陆token
 type AccessToken struct {
 	BaseModel
 	SessionID  string    `gorm:"comment: 权限ID; type:VARCHAR(255); index;" json:"session_id"`
@@ -108,6 +109,7 @@ func (Conversation) TableName() string {
 	return "conversation"
 }
 
+// ConversationRelation not use
 type ConversationRelation struct {
 	BaseModel
 	UserID         int    `gorm:"comment: 用户ID;  NOT NULL; index;" json:"user_id"`
@@ -115,6 +117,7 @@ type ConversationRelation struct {
 	Active         bool   `gorm:"comment: 当前激活;  NOT NULL; index;" json:"active"`
 }
 
+// Prompt 提示词
 type Prompt struct {
 	BaseModel
 	Key   string `gorm:"comment: key; index; type:VARCHAR(255)" json:"key"`
@@ -123,6 +126,16 @@ type Prompt struct {
 
 func (Prompt) TableName() string {
 	return "prompt"
+}
+
+type ChatHistory struct {
+	BaseModel
+	UserID  int    `gorm:"comment: 用户ID;  NOT NULL; index;" json:"user_id"`
+	History string `gorm:"comment: 所有聊天记录; type: text" json:"history"`
+}
+
+func (ChatHistory) TableName() string {
+	return "chat_history"
 }
 
 // InitMysqlDB 初始化 MysqlDB 连接
@@ -167,6 +180,7 @@ func InitMysqlDB() {
 		&GPTModel{},
 		&UserModel{},
 		&Prompt{},
+		&ChatHistory{},
 	)
 	return
 }
