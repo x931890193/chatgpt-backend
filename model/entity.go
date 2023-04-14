@@ -86,7 +86,7 @@ func (GPTModel) TableName() string {
 type AccessToken struct {
 	BaseModel
 	SessionID  string    `gorm:"comment: 权限ID; type:VARCHAR(255); index;" json:"session_id"`
-	ExpireTime time.Time `gorm:"type:timestamp; NOT NULL;" json:"-"`
+	ExpireTime time.Time `gorm:"type:timestamp; NOT NULL; DEFAULT:CURRENT_TIMESTAMP;;" json:"-"`
 	UserID     int       `gorm:"comment: 用户ID;  NOT NULL; index;" json:"user_id"`
 }
 
@@ -145,7 +145,7 @@ func InitMysqlDB() {
 	host := conf.Db.Host
 	if os.Getenv("PROGRAM_ENV") == "prod" {
 		password = "123456"
-		host = "mysql"
+		host = "127.0.0.1"
 	}
 	dsn := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local",
 		conf.Db.User,
