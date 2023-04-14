@@ -25,7 +25,11 @@ func pathExists(path string) (bool, error) {
 }
 
 func init() {
-	dir := filepath.Join(config.BasePath, "log")
+	path := config.BasePath
+	if os.Getenv("PROGRAM_ENV") == "prod" {
+		path = "."
+	}
+	dir := filepath.Join(path, "log")
 	exist, err := pathExists(dir)
 	if err != nil {
 		fmt.Printf("get dir error![%v]\n", err)
