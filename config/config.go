@@ -85,6 +85,15 @@ type config struct {
 		ASRStreamAPISecret string `yaml:"ASRStreamAPISecret"`
 		ASRStreamAPIKey    string `yaml:"ASRStreamAPIKey"`
 	} `yaml:"XunFei"`
+
+	Microsoft struct {
+		Key      string `yaml:"Key"`
+		Region   string `yaml:"Region"`
+		TokenUrl string `yaml:"TokenUrl"`
+		Host     string `yaml:"Host"`
+		AppName  string `yaml:"AppName"`
+		OutPut   string `yaml:"OutPut"`
+	} `yaml:"Microsoft"`
 }
 
 func init() {

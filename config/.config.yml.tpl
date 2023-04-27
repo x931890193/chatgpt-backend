@@ -39,3 +39,11 @@ XunFei：
   TTSAppSecret:
   ASRStreamAPISecret:
   ASRStreamAPIKey:
+
+Microsoft:
+    Key:
+    Region:
+    TokenUrl:
+    Host:
+    AppName:
+    OutPut:

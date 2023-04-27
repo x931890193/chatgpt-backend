@@ -6,6 +6,7 @@ import (
 	"chatgpt-backend/model"
 	"chatgpt-backend/service"
 	"chatgpt-backend/types"
+	"chatgpt-backend/utils/microsoft"
 	"chatgpt-backend/utils/qiniu"
 	"chatgpt-backend/utils/xunfei"
 	"encoding/json"
@@ -37,7 +38,8 @@ func Chat(c *gin.Context) {
 		return
 	}
 	if resp.Text != "" {
-		ttsBytes, err := xunfei.TtsClient.TTS(resp.Text)
+		//ttsBytes, err := xunfei.TtsClient.TTS(resp.Text)
+		ttsBytes, err := microsoft.TTS(resp.Text)
 		if err == nil {
 			key := fmt.Sprintf("gpt/tts/%s/%s.mp3", resp.ConversationId, resp.Id)
 			uploadRes := qiniu.UploadStream(key, ttsBytes)
